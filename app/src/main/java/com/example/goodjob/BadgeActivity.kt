@@ -32,8 +32,9 @@ class BadgeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
     private lateinit var userID: String
     private lateinit var spf: SharedPreferences
     private var toast: Toast? = null
-    lateinit var dbHelper: UsersDBHelper
+    lateinit var usersDBHelper: UsersDBHelper
     lateinit var sqLiteDatabase: SQLiteDatabase
+    lateinit var diaryDBHelper: DiaryDBHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,9 +74,12 @@ class BadgeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         userID = spf.getString("userID", "UNKNOWN")!!
 
         //일기 작성 일수 불러오기
-        //cursor = sqLiteDatabase.rawQuery("SELECT ... (achievement)")
-
-        //var days = (일기 작성 일수)
+        //var cursor : Cursor
+        //cursor = sqLiteDatabase.rawQuery("SELECT ... (일기들이 위치한 곳? 현재 로그인된 계정에서 쓰여진 일기의 개수를 셀 것임.)")
+        //sqLiteDatabase = diaryDBHelper.readableDatabase
+        //var days = (계정별 총 일기 개수)
+        //cursor.close
+        //sqLiteDatabase.close
 
         //텍스트 색상 초기화
         textView3days.setTextColor(Color.LTGRAY)
@@ -92,7 +96,6 @@ class BadgeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
         if (days < 3) {
             makeToast("이제 시작이에요! '작심삼일' 달성까지 ${3 - days}일 남았어요!")
-            textView3days.text = "3일 - 시작을 준비하는 시간."
         }
 
         if (days >= 3) {

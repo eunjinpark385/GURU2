@@ -6,13 +6,10 @@ import android.content.SharedPreferences
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.CalendarView
-import android.widget.CalendarView.OnDateChangeListener
-import android.widget.ImageView
-import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.NonNull
@@ -23,16 +20,22 @@ import com.example.goodjob.databinding.ActivityCalendarBinding
 import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
+import java.util.Collections
 
 class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    private lateinit var dbHelper: UsersDBHelper
+    private lateinit var usersDBHelper: UsersDBHelper
     private lateinit var sqLiteDatabase: SQLiteDatabase
+    private lateinit var diaryDBHelper: DiaryDBHelper
+
     private lateinit var binding: ActivityCalendarBinding
+
     private lateinit var calendarView: MaterialCalendarView
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
+
     private lateinit var toolbar: androidx.appcompat.widget.Toolbar
+
     private lateinit var userName: String
     private lateinit var userID: String
     private lateinit var spf: SharedPreferences
@@ -47,7 +50,6 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         navigationView = binding.activityCalendarNV
         toolbar = binding.activityCalendarTb
         calendarView = binding.activityCalendarCalendarView
-        calendarView.setSelectedDate(CalendarDay.today())
         spf = getSharedPreferences("user_info", MODE_PRIVATE)
 
         // 네비게이션 드로어 사용 설정
@@ -63,33 +65,35 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         navigationView.setNavigationItemSelectedListener(this)
         // 받아온 사용자 이름 출력
         Toast.makeText(this, userName + "님 환영합니다!", Toast.LENGTH_SHORT).show()
-
         //받아온 ID를 변수로 저장
         userID = spf.getString("userID", "UNKNOWN")!!
 
-//        sqLiteDatabase = dbHelper.readableDatabase
+        // 아래는 '일기가 작성된 날짜에 점으로 표시하는 코드'.  (DB 읽어 일기 작성된 날짜 가져오기, 해당 일에 점 추가.)
 
-//        var cursor: Cursor
-//        cursor = sqLiteDatabase.rawQuery("SELECT ... (일기 데이터 부분)")
+        //val calList = ArrayList<CalendarDay>()  //긁어온 날짜들을 넣을 리스트(일기가 작성된 날들)
+        //sqLiteDatabase = diaryDBHelper.readableDatabase
+        //var cursor: Cursor
+        //cursor = sqLiteDatabase.rawQuery("SELECT * FROM ... (일기들의 날짜가 있는 곳. 로그인 계정에 따라 구분될 것임.)")
+        //while(cursor.moveToNext()){
+        //  var day = cursor.getString(cursor.getColumnIndex("date")).toString() (?)
+        //  calList.add(CalendarDay.from(날짜)) : 날짜 형식 - (2000, 1, 1)
+        //}
+        //   리스트의 date들을 불러와 점을 찍는다.
+        //    for(calDay in calList){
+        //        calendarView.addDecorator(EventDecorator(Collections.singleton(calDay)))
+        //    }
+        //cursor.close
+        //sqLiteDatabase.close
 
-//        다이어리 작성 유무에 따라 캘린더에 시각화.(기분 아이콘)
-//            다이어리 DB, 날짜 확인
-//            if (그 날짜에 작성된 일기가 있다면)...
+        //날짜 선택 시, 각종 정보 전달함과 동시에 다이어리 화면으로 전환. (이를 받은 다이어리 액티비티는 각 DB에 접근.)
+        calendarView.setOnDateChangedListener { widget, date, selected ->
+            var intent = Intent(this, DiaryActivity::class.java)
 
-//        날짜 선택 시, 각종 정보 전달 + 다이어리 화면으로 전환. (이를 받은 다이어리 액티비티가 각 DB에 접근.)
-//        calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
-//
-//            //var intent = Intent(this, DiaryActivity::class.java)
-//
-//            //전달될 정보
-//            //intent.putExtra("userID", userID)
-//            intent.putExtra("year", year)
-//            intent.putExtra("month", month)
-//            intent.putExtra("dayOfMonth", dayOfMonth)
-//
-//            //화면 전환
-//            startActivity(intent)
-//        }
+            intent.putExtra("userID", userID)
+            intent.putExtra("date", date)   // date: CalendarDay (년/월/일은 각각 getYear(), getMonth(), getDay()로 접근 가능.)
+
+            startActivity(intent)
+        }
     }
 
     // 네비게이션 드로어 관련 메소드
