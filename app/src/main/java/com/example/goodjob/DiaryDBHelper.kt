@@ -5,6 +5,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 
 
 class DiaryDBHelper(context: Context) :
@@ -106,8 +107,8 @@ class DiaryDBHelper(context: Context) :
             null
         )
         val cursorCount = cursor.count
-        db.close()
         cursor.close()
+        db.close()
         return cursorCount
     }
 
@@ -157,6 +158,8 @@ class DiaryDBHelper(context: Context) :
                 allDate.add(cursor.getString(0))
         } else
             allDate.add("NULL")
+        cursor.close()
+        db.close()
         return allDate
     }
 }

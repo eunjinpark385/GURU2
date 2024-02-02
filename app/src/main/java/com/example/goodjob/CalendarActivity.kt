@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
@@ -67,12 +68,13 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         userID = spf.getString("userID", "UNKNOWN")!!
 
         // 저장된 일기가 있는 경우
-        if(diaryDBHelper.getDiaryCount(userID) > 0) {
+        diaryDBHelper = DiaryDBHelper(this)
+        val diaryCount = diaryDBHelper.getDiaryCount(userID)
+        if(diaryCount > 0) {
             // 현재 사용자가 작성한 모든 일기의 날짜들을 ArrayList로 반환합니다.
-            // 날짜들의 형식은 "yyyy-MM-dd" 형태이며, String 타입입니다.
+            // 날짜들의 형식은 "yyyy-MM-dd" 형태이며, String 타입입니다. 예시: 2024-02-02
             val allDate = diaryDBHelper.getAllDate(userID)
         }
-
         // 캘린더 날짜 선택 시, DiaryActivity 전환
         val intent = Intent(this, DiaryActivity::class.java)
         val dateFormat = SimpleDateFormat("yyyy년 M월 d일", Locale.getDefault())
