@@ -57,14 +57,30 @@ class DiaryActivity : AppCompatActivity() {
 
         // Calendar Activity 로부터 사용자 가 선택한 날짜 받아옴
         val date = intent.getStringExtra("date")
+        val dateForDiaryDB = intent.getStringExtra("dateForDiaryDB")
+        val yearForEmojiDB = intent.getStringExtra("yearForEmojiDB")
+        val monthForEmojiDB = intent.getStringExtra("monthForEmojiDB")
         textViewDate.text = date
+
+        // 선택된 날짜에 이미 작성된 일기가 있다면, 수정하도록 설정
+        val contentArray = dbHelper.getDate(userID!!, dateForDiaryDB!!)
+        var isExist = false
+        if (contentArray[0] != "NULL") {
+            isExist = true
+            moodName = emojiDBHelper.getEmojiName(userID, dateForDiaryDB)
+            val src = getDrawableID(moodName)
+            // String 을 Editable 객체로 변환해 적용 하기 위해 setText 메소드 사용
+            imageView.setImageResource(src)
+            weatherEditText.setText(contentArray[0])
+            editTitle.setText(contentArray[1])
+            editText.setText(contentArray[2])
+            editText2.setText(contentArray[3])
+            makeToast("수정할 부분을 새로 작성해주세요")
+        }
 
         // Diary 저장 버튼 클릭
         saveButton.setOnClickListener {
             // 입력된 내용 가져옴
-            val dateForDiaryDB = intent.getStringExtra("dateForDiaryDB")
-            val yearForEmojiDB = intent.getStringExtra("yearForEmojiDB")
-            val monthForEmojiDB = intent.getStringExtra("monthForEmojiDB")
             val weather = weatherEditText.text.toString()
             val title = editTitle.text.toString()
             val content1 = editText.text.toString()
@@ -81,7 +97,7 @@ class DiaryActivity : AppCompatActivity() {
                 makeToast("칭찬 내용을 입력해주세요.")
             else if (moodName == "NULL")
                 makeToast("이모지를 선택해주세요.")
-            else {
+            else if (!isExist) {
                 // 데이터베이스에 저장
                 val success = dbHelper.saveDiary(
                     userID,
@@ -95,7 +111,8 @@ class DiaryActivity : AppCompatActivity() {
                     userID!!,
                     moodName,
                     yearForEmojiDB!!,
-                    monthForEmojiDB!!
+                    monthForEmojiDB!!,
+                    dateForDiaryDB
                 )
                 // 데이터베이스에 저장 여부 메세지 표시
                 if (success && isMoodSaveSuccess) {
@@ -104,6 +121,28 @@ class DiaryActivity : AppCompatActivity() {
                     startActivity(intent)
                 } else {
                     makeToast("저장 실패")
+                }
+            } else {
+                val isUpdateSuccess = dbHelper.updateDiary(
+                    userID,
+                    dateForDiaryDB,
+                    weather,
+                    title,
+                    content1,
+                    content2
+                )
+                val isMoodUpdateSuccess = emojiDBHelper.updateData(
+                    userID,
+                    moodName,
+                    dateForDiaryDB
+                )
+                // 업데이트 성공 여부 표시
+                if (isUpdateSuccess && isMoodUpdateSuccess) {
+                    val intent = Intent(this, CalendarActivity::class.java)
+                    makeToast("내용이 업데이트 되었습니다.")
+                    startActivity(intent)
+                } else {
+                    makeToast("내용 업데이트 실패")
                 }
             }
         }
@@ -145,5 +184,22 @@ class DiaryActivity : AppCompatActivity() {
         toast?.cancel()
         toast = Toast.makeText(this, message, Toast.LENGTH_SHORT)
         toast?.show()
+    }
+
+    // Drawable ID 가져 오는 함수
+    private fun getDrawableID(moodName: String): Int {
+        var id: Int = -1
+        when (moodName) {
+            "mood_angry" -> id = R.drawable.emoji_angry
+            "mood_basic" -> id = R.drawable.emoji_basic
+            "mood_best" -> id = R.drawable.emoji_best
+            "mood_dejected" -> id = R.drawable.emoji_dejected
+            "mood_depression" -> id = R.drawable.emoji_depression
+            "mood_happy" -> id = R.drawable.emoji_happy
+            "mood_proud" -> id = R.drawable.emoji_proud
+            "mood_sad" -> id = R.drawable.emoji_sad
+            "mood_sick" -> id = R.drawable.emoji_sick
+        }
+        return id
     }
 }
