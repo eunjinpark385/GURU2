@@ -20,6 +20,7 @@ class EmojiDBHelper(context: Context) :
         private const val COLUMN_EMOJI_NAME = "emoji_name"
         private const val COLUMN_YEAR = "year"
         private const val COLUMN_MONTH = "month"
+        private const val COLUMN_DATE = "date"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -28,7 +29,8 @@ class EmojiDBHelper(context: Context) :
                 "$COLUMN_USER_ID TEXT NOT NULL," +
                 "$COLUMN_EMOJI_NAME TEXT NOT NULL," +
                 "$COLUMN_YEAR TEXT NOT NULL," +
-                "$COLUMN_MONTH TEXT NOT NULL);")
+                "$COLUMN_MONTH TEXT NOT NULL," +
+                "$COLUMN_DATE TEXT NOT NULL);")
         db?.execSQL(sqlCreateTable)
     }
 
@@ -38,18 +40,58 @@ class EmojiDBHelper(context: Context) :
     }
 
     // Emoji Table 에 데이터 삽입
-    fun insertData(userID: String, emojiName: String, year: String, month: String): Boolean {
+    fun insertData(userID: String, emojiName: String, year: String, month: String, date: String): Boolean {
         val db = this.writableDatabase
         val values = ContentValues().apply {
             put(COLUMN_USER_ID, userID)
             put(COLUMN_EMOJI_NAME, emojiName)
             put(COLUMN_YEAR, year)
             put(COLUMN_MONTH, month)
+            put(COLUMN_DATE, date)
         }
         val result = db?.insert(TABLE_NAME, null, values)
         db.close()
         // insert() : 오류 발생 시 -1L 리턴
         return result != -1L
+    }
+
+    // 이모지 업데이트
+    fun updateData(userID: String, emojiName: String, date: String): Boolean {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COLUMN_EMOJI_NAME, emojiName)
+        val result = db.update(
+            TABLE_NAME,
+            values,
+            "$COLUMN_USER_ID = ? AND $COLUMN_DATE = ?",
+            arrayOf(userID, date)
+        )
+        db.close()
+        return result != -1
+    }
+
+    // Emoji Name 반환 함수
+    fun getEmojiName(userID: String, date: String): String {
+        val db = this.readableDatabase
+        val emojiName: String
+        val cursor = db.query(
+            TABLE_NAME,
+            arrayOf(COLUMN_EMOJI_NAME),
+            "$COLUMN_USER_ID = ? AND $COLUMN_DATE = ?",
+            arrayOf(userID, date),
+            null,
+            null,
+            null
+        )
+        emojiName = if (cursor.count != 0) {
+            cursor.moveToFirst()
+            cursor.getString(0)
+        } else {
+            "NULL"
+        }
+        cursor.close()
+        db.close()
+        return emojiName
     }
 
     // 각 Emoji 가 사용된 개수 반환
@@ -91,6 +133,7 @@ class EmojiDBHelper(context: Context) :
             array.sortByDescending { it.emojiCount }
         }
         cursor.close()
+        db.close()
         return array
     }
 
