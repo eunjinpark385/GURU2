@@ -63,7 +63,7 @@ class DiaryActivity : AppCompatActivity() {
         textViewDate.text = date
 
         // 선택된 날짜에 이미 작성된 일기가 있다면, 수정하도록 설정
-        val contentArray = dbHelper.getDate(userID!!, dateForDiaryDB!!)
+        val contentArray = dbHelper.getData(userID!!, dateForDiaryDB!!)
         var isExist = false
         if (contentArray[0] != "NULL") {
             isExist = true

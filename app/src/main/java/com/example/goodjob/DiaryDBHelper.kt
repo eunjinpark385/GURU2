@@ -112,7 +112,7 @@ class DiaryDBHelper(context: Context) :
     }
 
     // 작성된 일기 반환 함수
-    fun getDate(userID: String, date: String): Array<String> {
+    fun getData(userID: String, date: String): Array<String> {
         val contentArray = arrayOf("NULL", "NULL", "NULL", "NULL")
         val db = this.readableDatabase
         val cursor = db.query(
@@ -137,5 +137,26 @@ class DiaryDBHelper(context: Context) :
         db.close()
         cursor.close()
         return contentArray
+    }
+
+    // 작성된 일기들의 날짜를 반환하는 함수
+    fun getAllDate(userID: String): ArrayList<String> {
+        val db = this.readableDatabase
+        val allDate = ArrayList<String>()
+        val cursor = db.query(
+            TABLE_NAME,
+            arrayOf(COLUMN_DATE),
+            "$COLUMN_USER_ID = ?",
+            arrayOf(userID),
+            null,
+            null,
+            null
+        )
+        if (cursor.count != 0) {
+            while (cursor.moveToNext())
+                allDate.add(cursor.getString(0))
+        } else
+            allDate.add("NULL")
+        return allDate
     }
 }

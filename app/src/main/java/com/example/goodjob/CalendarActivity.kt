@@ -66,6 +66,13 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         //받아온 ID를 변수로 저장
         userID = spf.getString("userID", "UNKNOWN")!!
 
+        // 저장된 일기가 있는 경우
+        if(diaryDBHelper.getDiaryCount(userID) > 0) {
+            // 현재 사용자가 작성한 모든 일기의 날짜들을 ArrayList로 반환합니다.
+            // 날짜들의 형식은 "yyyy-MM-dd" 형태이며, String 타입입니다.
+            val allDate = diaryDBHelper.getAllDate(userID)
+        }
+
         // 캘린더 날짜 선택 시, DiaryActivity 전환
         val intent = Intent(this, DiaryActivity::class.java)
         val dateFormat = SimpleDateFormat("yyyy년 M월 d일", Locale.getDefault())
