@@ -3,7 +3,6 @@ package com.example.goodjob
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
