@@ -17,6 +17,8 @@ import com.google.android.material.navigation.NavigationView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
 import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Collections
 import java.util.Locale
 
 class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -74,7 +76,18 @@ class CalendarActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             // 현재 사용자가 작성한 모든 일기의 날짜들을 ArrayList로 반환합니다.
             // 날짜들의 형식은 "yyyy-MM-dd" 형태이며, String 타입입니다. 예시: 2024-02-02
             val allDate = diaryDBHelper.getAllDate(userID)
+            val calList = ArrayList<CalendarDay>()
+
+            for(date in allDate){
+                var splitedDate = date.split('-')
+                calList.add(CalendarDay.from(splitedDate[0].toInt(), splitedDate[1].toInt()-1, splitedDate[2].toInt()))
+            }
+
+            for(calDay in calList){
+                calendarView.addDecorator(EventDecorator(Collections.singleton(calDay)))
+            }
         }
+
         // 캘린더 날짜 선택 시, DiaryActivity 전환
         val intent = Intent(this, DiaryActivity::class.java)
         val dateFormat = SimpleDateFormat("yyyy년 M월 d일", Locale.getDefault())

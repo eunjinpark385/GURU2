@@ -71,12 +71,8 @@ class BadgeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         userID = spf.getString("userID", "UNKNOWN")!!
 
         //일기 작성 일수 불러오기
-        //var cursor : Cursor
-        //cursor = sqLiteDatabase.rawQuery("SELECT ... (일기들이 위치한 곳? 현재 로그인된 계정에서 쓰여진 일기의 개수를 셀 것임.)")
-        //sqLiteDatabase = diaryDBHelper.readableDatabase
-        //var days = (계정별 총 일기 개수)
-        //cursor.close
-        //sqLiteDatabase.close
+        diaryDBHelper = DiaryDBHelper(this)
+        var diaryCount = diaryDBHelper.getDiaryCount(userID)
 
         //텍스트 색상 초기화
         textView3days.setTextColor(Color.LTGRAY)
@@ -85,7 +81,7 @@ class BadgeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         textView66days.setTextColor(Color.LTGRAY)
         textView100days.setTextColor(Color.LTGRAY)
 
-        //badgeUnlock(days)
+        badgeUnlock(diaryCount)
     }
 
     //배지 텍스트 색상 변경, 토스트 메시지 설정
