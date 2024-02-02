@@ -2,7 +2,6 @@ package com.example.goodjob
 
 import android.content.Intent
 import android.content.SharedPreferences
-import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
@@ -29,9 +28,7 @@ class BadgeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
     private lateinit var userID: String
     private lateinit var spf: SharedPreferences
     private var toast: Toast? = null
-    lateinit var usersDBHelper: UsersDBHelper
-    lateinit var sqLiteDatabase: SQLiteDatabase
-    lateinit var diaryDBHelper: DiaryDBHelper
+    private lateinit var diaryDBHelper: DiaryDBHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,12 +68,8 @@ class BadgeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         userID = spf.getString("userID", "UNKNOWN")!!
 
         //일기 작성 일수 불러오기
-        //var cursor : Cursor
-        //cursor = sqLiteDatabase.rawQuery("SELECT ... (일기들이 위치한 곳? 현재 로그인된 계정에서 쓰여진 일기의 개수를 셀 것임.)")
-        //sqLiteDatabase = diaryDBHelper.readableDatabase
-        //var days = (계정별 총 일기 개수)
-        //cursor.close
-        //sqLiteDatabase.close
+        diaryDBHelper = DiaryDBHelper(this)
+        val diaryCount = diaryDBHelper.getDiaryCount(userID)
 
         //텍스트 색상 초기화
         textView3days.setTextColor(Color.LTGRAY)
@@ -86,10 +79,11 @@ class BadgeActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         textView100days.setTextColor(Color.LTGRAY)
 
         //badgeUnlock(days)
+        badgeUnlock(diaryCount)
     }
 
     //배지 텍스트 색상 변경, 토스트 메시지 설정
-    fun badgeUnlock(days: Int) {
+    private fun badgeUnlock(days: Int) {
 
         if (days < 3) {
             makeToast("이제 시작이에요! '작심삼일' 달성까지 ${3 - days}일 남았어요!")

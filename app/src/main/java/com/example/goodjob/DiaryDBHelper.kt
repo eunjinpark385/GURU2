@@ -1,11 +1,9 @@
 package com.example.goodjob
 
-import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 
 
 class DiaryDBHelper(context: Context) :
@@ -26,9 +24,9 @@ class DiaryDBHelper(context: Context) :
 
     //데이터 베이스 생성
     override fun onCreate(db: SQLiteDatabase) {
-        val CREATE_TABLE =
+        val createTable =
             ("CREATE TABLE $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COLUMN_USER_ID TEXT, $COLUMN_DATE TEXT, $COLUMN_WEATHER TEXT, $COLUMN_TITLE TEXT, $COLUMN_CONTENT1 TEXT, $COLUMN_CONTENT2 TEXT);")
-        db.execSQL(CREATE_TABLE)
+        db.execSQL(createTable)
     }
 
     //데이터베이스 업그레이드

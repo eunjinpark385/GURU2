@@ -3,7 +3,6 @@ package com.example.goodjob
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
@@ -61,7 +60,6 @@ class EmotionStatistics : AppCompatActivity(), NavigationView.OnNavigationItemSe
 
         // 현재 Month 로 설정
         val monthFormat = SimpleDateFormat("M월", Locale.getDefault())
-        val dateFormat = SimpleDateFormat("yyyyMM", Locale.getDefault())
         val yearForEmojiDBFormat = SimpleDateFormat("yyyy", Locale.getDefault())
         val monthForEmojiDBFormat = SimpleDateFormat("M", Locale.getDefault())
         val calendar = Calendar.getInstance()
